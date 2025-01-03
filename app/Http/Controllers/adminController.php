@@ -15,6 +15,7 @@ use App\Models\category;
 use App\Models\orderItem;
 use App\Models\subCategory;
 use App\Models\shop_order;
+use App\Models\hold_product;
 use App\Models\shop_order_items;
 use App\Models\shop_transection;
 use App\Models\transection;
@@ -331,7 +332,7 @@ class adminController extends Controller
      return redirect('product')->with('success','Data update success.');
    }
    public function delete_images($id){
-      return $id;
+     // return $id;
       images::destroy($id);
       return back();
    }
@@ -798,8 +799,17 @@ class adminController extends Controller
         return view('admin.edit_sales',compact('edit_data','address'));
       }
       public function hold_product(Request $request){
-        return $request->input('data_s');
+        $serializedData = $request->input('data');
+        parse_str($serializedData, $formData);
+
+
+
+         return 'ok';
+
+        // back()->with('success', 'Data hold successfully.');
+
       }
+
 
 
 

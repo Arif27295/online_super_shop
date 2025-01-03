@@ -4,6 +4,11 @@
 @endsection
 @section('content')
 <div class="container-fluid py-2">
+    @if(session('delete'))
+        <p class="alert alert-danger text-white alert-design">{{session('delete')}}</p>
+        @elseif(session('success'))
+        <p class="alert alert-success text-white alert-design">{{session('success')}}</p>
+    @endif
 <div class="row">
         <div class="col-12">
           <div class="card my-4">
@@ -168,9 +173,11 @@
     $(document).ready(function(){
 
         $('.hold').click(function(){
-            $('#SubmitForm').on('submit',function(e){
+            $('#SubmitForm').on('click',function(e){
                 e.preventDefault();
                 var data_s = $('#SubmitForm').serialize();
+
+             //   alert(data_s);
                 $.ajax({
                     url : "{{route('hold_product')}}",
                     type : "POST",
@@ -178,9 +185,9 @@
                     "_token" : "{{csrf_token()}}",
                     data : data_s
                 },
-                    success:function(response){
-                        alert(response);
-                        $("#SubmitForm")[0].reset();
+                success:function(response){
+                    alert(response);
+                    $("#SubmitForm")[0].reset();
                     }
                 });
             });
