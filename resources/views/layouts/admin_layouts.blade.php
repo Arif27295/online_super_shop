@@ -8,6 +8,7 @@
 
   <link rel="apple-touch-icon" sizes="76x76" href="{{asset('admin_assets/assets/img/apple-icon.png')}}">
   <link rel="icon" type="image/png" href="{{asset('admin_assets/assets/img/favicon.png')}}">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <title>
     Material Dashboard 3 by Creative Tim
   </title>

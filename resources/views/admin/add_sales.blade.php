@@ -88,7 +88,7 @@
                             <th class="text-secondary opacity-7"></th>
                           </tr>
                         </thead>
-                        <tbody id="selected-products">
+                        <tbody id="selected-products" class="selected-products">
 
                         </tbody>
                       </table>
@@ -147,10 +147,27 @@
                                 <input value="Sale Now" type="submit" class="form-control bg-primary text-white text-center">
                               </div>
                             </div>
+                            <div id="id01" class="w3-modal">
+                                <div class="w3-modal-content w3-animate-top w3-card-4">
+                                  <header class="w3-container w3-teal">
+                                    <span onclick="document.getElementById('id01').style.display='none'"
+                                    class="w3-button w3-display-topright">&times;</span>
+                                    <h2>Modal Header</h2>
+                                  </header>
+                                  <div class="w3-container">
+                                    <p>Some text..</p>
+                                    <p>Some text..</p>
+                                  </div>
+                                  <footer class="w3-container w3-teal">
+                                    <p>Modal Footer</p>
+                                  </footer>
+                                </div>
+                              </div>
+                            </div>
                             <div class="d-flex justify-content-center mb-3">
                             <a class="m-0 text-white text-capitalize btn bg-primary me-3 hold"  data-bs-toggle="tooltip" title="Hold"><i class="ri-pause-mini-line"></i></a>
-                            <a class="m-0 text-white text-capitalize btn bg-primary me-3"  data-bs-toggle="tooltip" title="Restore" href="{{route('sales')}}"><i class="ri-reset-left-line"></i></a>
-                            <a class="m-0 text-white text-capitalize btn bg-primary me-3"  data-bs-toggle="tooltip" title="Replace" href="{{route('sales')}}"><i class="ri-loop-left-fill"></i></a>
+                            <a class="m-0 text-white text-capitalize btn bg-primary me-3"  data-bs-toggle="tooltip" title="Restore" onclick="document.getElementById('id01').style.display='block'"><i class="ri-reset-left-line"></i></a>
+                            <a class="m-0 text-white text-capitalize btn bg-primary me-3"  data-bs-toggle="tooltip" title="Replace"><i class="ri-loop-left-fill"></i></a>
                             </div>
                         </div>
                     </div>
@@ -170,28 +187,10 @@
     });
 
 
+
+
+
     $(document).ready(function(){
-
-        $('.hold').click(function(){
-            $('#SubmitForm').on('click',function(e){
-                e.preventDefault();
-                var data_s = $('#SubmitForm').serialize();
-
-             //   alert(data_s);
-                $.ajax({
-                    url : "{{route('hold_product')}}",
-                    type : "POST",
-                    data : {
-                    "_token" : "{{csrf_token()}}",
-                    data : data_s
-                },
-                success:function(response){
-                    alert(response);
-                    $("#SubmitForm")[0].reset();
-                    }
-                });
-            });
-        });
 
 
 
@@ -240,17 +239,17 @@
                     <td><img src="{{asset('product_image')}}/${productImage}"" class="avatar avatar-sm me-3 border-radius-lg" alt="user1"></td>
                     <td><p class="text-xs font-weight-bold mb-0">${productName}</p></td>
                          <td style="display:none;">
-                            <input name="product_id[]" value="${productId}">
+                            <input name="product_id[]" id="product_id" class="product_id" value="${productId}">
                           </td>
                         <td><p class="text-xs font-weight-bold mb-0">$<input class="sals_checkout" readonly id="price" name="price[]" style="width:50px;" value="${productPrice}"></p></td>
                         <td class="">
                               <div id="field1">
                                 <button type="button" id="sub" class="sub me-2" style="font-size:1.25rem!important;width:1.75rem;height:1.75rem;color:#737373">-</button>
-                                <input type="number" name="quantity[]" id="quantity" readonly  value="1" min="1" style="font-size:.75rem!important;color:#737373"/>
+                                <input type="number" name="quantity[]" class="quantity" id="quantity" readonly  value="1" min="1" style="font-size:.75rem!important;color:#737373"/>
                                 <button type="button" id="add" class="add" style="font-size:1.25rem!important;width:1.75rem;height:1.75rem; color:#737373">+</button>
                               </div>
                         </td>
-                        <td><p class="text-xs font-weight-bold mb-0">$<input class="sals_checkout sals_total" readonly id="total"style="width:50px" value="${productPrice}"></p></td>
+                        <td><p class="text-xs font-weight-bold mb-0">$<input class="sals_checkout hold-total sals_total" readonly id="total"style="width:50px" value="${productPrice}"></p></td>
                         <td class="align-middle" style="text-align:center">
                           <a class="badge delete-row badge-sm bg-gradient-primary" style="cursor:pointer">delete</a>
                         </td>
@@ -386,7 +385,38 @@
 
             });
 
-	 });
+	});
+
+    $('.hold').on('click', function () {
+    let invoiceNo = Date.now();
+    const rows = [];
+    $('.selected-products tr').each(function () {
+        rows.push({
+            product_id: $(this).find('.product_id').val(),
+            sals_total: $(this).find('.hold-total').val(),
+            quantity: $(this).find('.quantity').val(),
+        });
+    });
+    const formData = new FormData();
+    formData.append('_token', '{{ csrf_token() }}');
+    formData.append('invoiceNo', invoiceNo);
+    formData.append('rows', JSON.stringify(rows));
+    $.ajax({
+        url: '{{ route("hold_product") }}',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (response) {
+            alert("Data hold successfully");
+            location.reload();
+        },
+        error: function (xhr, status, error) {
+            console.error("Error:", error);
+        }
+    });
+});
+
 
 </script>
 @endpush

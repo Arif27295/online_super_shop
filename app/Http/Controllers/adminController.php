@@ -798,17 +798,35 @@ class adminController extends Controller
         $address = address::where('user_id', $user->id)->with('User')->first();
         return view('admin.edit_sales',compact('edit_data','address'));
       }
+
+
+
+
       public function hold_product(Request $request){
-        $serializedData = $request->input('data');
-        parse_str($serializedData, $formData);
+        try {
+            $invoiceNo = $request->invoiceNo;
+
+            // Process each row of stock data and store it in the hold_sale table
+            $rows = json_decode($request->rows, true);
 
 
+            foreach ($rows as $row) {
+                // Insert into hold_sales table
+                DB::table('hold_products')->insert([
+                    'product_id' => $row['product_id'],
+                    'price' => $row['sals_total'],
+                    'quantity' => $row['quantity'],
+                    'invoice' => $invoiceNo,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+            return redirect()->back();
 
-         return 'ok';
-
-        // back()->with('success', 'Data hold successfully.');
-
-      }
+        } catch (\Exception $e) {
+            return redirect()->back();
+        }
+    }
 
 
 
